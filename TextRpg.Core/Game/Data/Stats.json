@@ -1,0 +1,33 @@
+[
+  {
+      "Name": "Strength",
+      "Increases": true,
+      "Affects": {
+          "MinDamage": { "Value": 1.5, "IsMultiplier": false },
+          "MaxDamage": { "Value": 2.0, "IsMultiplier": false }
+      }
+  },
+  {
+      "Name": "Stamina",
+      "Increases": true,
+      "Affects": {
+          "MaxHealth": { "Value": 0.05, "IsMultiplier": true }
+      }
+  },
+  {
+      "Name": "Dexterity",
+      "Increases": true,
+      "Affects": {
+          "Evasion": { "Value": 0.2, "IsMultiplier": false },
+          "SpecialEvasion": { "Value": 0.2, "IsMultiplier": false }
+      }
+  },
+  {
+      "Name": "Cunning",
+      "Increases": true,
+      "Affects": {
+          "CritChance": { "Value": 0.05, "IsMultiplier": false },
+          "CritDamage": { "Value": 0.1, "IsMultiplier": false }
+      }
+  }
+]
