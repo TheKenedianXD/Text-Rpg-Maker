@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="BaseData\" />
-    <Folder Include="Data\" />
-    <Folder Include="Game\" />
-    <Folder Include="Utilities\" />
-    <Folder Include="Saves\" />
+    <Folder Include="Game\Data\" />
+    <Folder Include="Game\Saves\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>
