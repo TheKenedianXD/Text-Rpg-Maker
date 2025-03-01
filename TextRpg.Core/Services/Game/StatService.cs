@@ -81,14 +81,22 @@ namespace TextRpg.Core.Services.Game
 
                             if (affectedStat.Value.IsMultiplier)
                             {
-                                baseStats[affectedStat.Key] *= (1 + value);
-                            }
+                                if (affectedStat.Value.Value >= 0)
+                                {
+                                    baseStats[affectedStat.Key] *= (1 + value);
+                                } 
+                                else
+                                {
+                                    baseStats[affectedStat.Key] /= (1 + Math.Abs(value));
+                                }
+                            } 
                             else
                             {
                                 baseStats[affectedStat.Key] += value;
                             }
                         }
                     }
+
                 }
             }
 

@@ -1,33 +1,84 @@
 [
   {
-      "Name": "Strength",
-      "Increases": true,
-      "Affects": {
-          "MinDamage": { "Value": 1.5, "IsMultiplier": false },
-          "MaxDamage": { "Value": 2.0, "IsMultiplier": false }
+    "Name": "Strength",
+    "Description": "Increases min/max damage.",
+    "Affects": {
+      "MinDamage": {
+        "Value": 1.5,
+        "IsMultiplier": false
+      },
+      "MaxDamage": {
+        "Value": 2.0,
+        "IsMultiplier": false
       }
+    }
   },
   {
-      "Name": "Stamina",
-      "Increases": true,
-      "Affects": {
-          "MaxHealth": { "Value": 0.05, "IsMultiplier": true }
+    "Name": "Stamina",
+    "Description": "Increases Max Health.",
+    "Affects": {
+      "MaxHealth": {
+        "Value": 0.05,
+        "IsMultiplier": true
       }
+    }
   },
   {
-      "Name": "Dexterity",
-      "Increases": true,
-      "Affects": {
-          "Evasion": { "Value": 0.2, "IsMultiplier": false },
-          "SpecialEvasion": { "Value": 0.2, "IsMultiplier": false }
+    "Name": "Intellect",
+    "Description": "Increases Max Special Resource.",
+    "Affects": {
+      "MaxSpecialResource": {
+        "Value": 0.05,
+        "IsMultiplier": true
       }
+    }
   },
   {
-      "Name": "Cunning",
-      "Increases": true,
-      "Affects": {
-          "CritChance": { "Value": 0.05, "IsMultiplier": false },
-          "CritDamage": { "Value": 0.1, "IsMultiplier": false }
+    "Name": "Armor",
+    "Description": "Increases physical defense.",
+    "Affects": {
+      "Defense": {
+        "Value": 1.5,
+        "IsMultiplier": false
       }
+    }
+  },
+  {
+    "Name": "Magic Armor",
+    "Description": "Increases magic resistance.",
+    "Affects": {
+      "SpecialDefense": {
+        "Value": 1.5,
+        "IsMultiplier": false
+      }
+    }
+  },
+  {
+    "Name": "Cunning",
+    "Description": "Increases critical hit chance and critical damage.",
+    "Affects": {
+      "CritChance": {
+        "Value": 0.05,
+        "IsMultiplier": false
+      },
+      "CritDamage": {
+        "Value": 0.1,
+        "IsMultiplier": false
+      }
+    }
+  },
+  {
+    "Name": "Agility",
+    "Description": "Increases evasion and special evasion.",
+    "Affects": {
+      "Evasion": {
+        "Value": 0.2,
+        "IsMultiplier": false
+      },
+      "SpecialEvasion": {
+        "Value": 0.2,
+        "IsMultiplier": false
+      }
+    }
   }
 ]
