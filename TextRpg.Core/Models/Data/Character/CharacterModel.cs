@@ -31,6 +31,11 @@ namespace TextRpg.Core.Models.Data.Character
         [Description("The character's primary stats, used for calculations.")]
         public Dictionary<string, int> PrimaryStats { get; set; } = [];
 
+        public CharacterModel()
+        {
+
+        }
+
         public CharacterModel(string name, float experience, int level, string race, string characterClass, DateTime lastPlayed,
             float currentHealth, float currentSpecialResource, Dictionary<string, int> primaryStats)
             : base(currentHealth, currentSpecialResource)

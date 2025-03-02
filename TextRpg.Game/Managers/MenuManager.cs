@@ -107,32 +107,36 @@ namespace TextRpg.Game.Managers
 
             for (int row = 0; row < _rows; row++)
             {
+                if (_menuItems[row, 0] == null)
+                {
+                    Console.WriteLine();
+                    continue;
+                }
+
+                List<(string text, ConsoleColor? color)> coloredItems = [];
+
                 for (int col = 0; col < _cols; col++)
                 {
                     if (_menuItems[row, col] == null)
                     {
-                        Console.Write("        ");
+                        coloredItems.Add(("        ", null));
                         continue;
                     }
 
                     if (_menuItems[row, col].Action == null)
                     {
-                        Console.WriteLine();
+                        coloredItems.Add(("\n", null));
                         continue;
                     }
 
-                    if (row == _selectedRow && col == _selectedCol)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write($"[ {_menuItems[row, col].Name} ]");
-                        Console.ResetColor();
-                    } else
-                    {
-                        Console.Write($"  {_menuItems[row, col].Name}  ");
-                    }
+                    bool isSelected = (row == _selectedRow && col == _selectedCol);
+                    string itemText = isSelected ? $"[ {_menuItems[row, col].Name} ]" : $"  {_menuItems[row, col].Name}  ";
+                    coloredItems.Add((itemText, isSelected ? ConsoleColor.Yellow : null));
                 }
-                Console.WriteLine();
+
+                GameWriter.ColoredCenterText(coloredItems);
             }
         }
+
     }
 }

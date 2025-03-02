@@ -6,6 +6,17 @@ namespace TextRpg.Core.Utilities
 {
     public static class Logger
     {
+        private static AppConfigModel _config = new();
+
+        public static bool IsInitialized { get; set; } = false;
+
+        public static void Initialize(AppConfigModel config)
+        {
+            _config = config;
+            IsInitialized = true;
+            LogInfo($"{nameof(Logger)}::{nameof(Initialize)}", "Logger initialized with AppConfig.");
+        }
+
         private static readonly Dictionary<string, int> LogLevels = new()
         {
             { "Info", 1 },
@@ -23,8 +34,9 @@ namespace TextRpg.Core.Utilities
 
         private static void WriteLog(string level, string origin, string message, Exception? exception = null)
         {
-            var config = ConfigDataService.GetSingle<AppConfigModel>(ConfigData.AppConfig);
-            if (LogLevels[level] < LogLevels[config.LogLevel])
+            if (!IsInitialized) return;
+
+            if (LogLevels[level] < LogLevels[_config.LogLevel])
                 return;
 
             string timestamp = DateTime.Now.ToString("dd.MM.yyyy-HH:mm:ss");

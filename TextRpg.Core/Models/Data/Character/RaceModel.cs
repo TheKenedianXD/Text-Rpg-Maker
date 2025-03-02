@@ -14,6 +14,11 @@ namespace TextRpg.Core.Models.Data.Character
         [Description("The default base stats assigned to this race.")]
         public BaseStatsModel DefaultBaseStats { get; set; }
 
+        public RaceModel()
+        {
+            DefaultBaseStats = new BaseStatsModel();
+        }
+
         public RaceModel(string name, string description, BaseStatsModel defaultBaseStats)
         {
             Name = name;
