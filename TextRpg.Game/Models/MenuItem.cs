@@ -2,7 +2,6 @@
 {
     public class MenuItem
     {
-        //TODO move to models
         public string Name { get; }
         public Action? Action { get; }
 

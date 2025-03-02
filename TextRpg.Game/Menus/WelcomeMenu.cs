@@ -17,7 +17,6 @@ namespace TextRpg.Game.Menus
                 { new MenuItem("Exit", onExit) }
             };
 
-            // TODO
             string header = $"== Welcome to GameName ==\n\n" +
                 "This is a fully customizable TextRpg\n" +
                 "Use the AdminPanel.exe to customize your data\n" +
