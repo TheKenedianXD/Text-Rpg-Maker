@@ -1,4 +1,5 @@
-﻿using TextRpg.Core.Models.Config;
+﻿using System.Reflection;
+using TextRpg.Core.Models.Config;
 using TextRpg.Core.Models.Enums;
 using TextRpg.Core.Services.Data;
 
@@ -26,8 +27,18 @@ namespace TextRpg.Core.Utilities
 
         private static string GetLogFilePath()
         {
-            string logDirectory = "Logs";
-            Directory.CreateDirectory(logDirectory);
+            string source = Assembly.GetCallingAssembly().FullName ?? "";
+            string baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+
+            string logDirectory = source.Contains("Core") ? Path.Combine(baseDirectory, "Core") :
+                                      source.Contains("AdminPanel") ? Path.Combine(baseDirectory, "AdminPanel") :
+                                      Path.Combine(baseDirectory, "Game");
+
+            if (!Directory.Exists(logDirectory))
+            {
+                Directory.CreateDirectory(logDirectory);
+            }
+
             string logFileName = $"log-{DateTime.Now:ddMMyyyy}.log";
             return Path.Combine(logDirectory, logFileName);
         }

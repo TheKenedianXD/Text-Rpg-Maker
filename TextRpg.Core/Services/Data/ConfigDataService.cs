@@ -35,6 +35,17 @@ namespace TextRpg.Core.Services.Data
             }
         }
 
+        public static List<T> GetData<T>(ConfigData key) where T : class
+        {
+            Logger.LogInfo($"{nameof(ConfigDataService)}::{nameof(GetData)}", $"Retrieving data for {key}");
+
+            if (LoadedData.TryGetValue(key, out object? value) && value is List<T> typedList)
+                return typedList;
+
+            Logger.LogWarning($"{nameof(ConfigDataService)}::{nameof(GetData)}", $"Data for {key} not found or is of incorrect type.");
+            return [];
+        }
+
         public static T GetSingle<T>(ConfigData key) where T : class
         {
             Logger.LogInfo($"{nameof(ConfigDataService)}::{nameof(GetSingle)}", $"Retrieving single config data for {key}");

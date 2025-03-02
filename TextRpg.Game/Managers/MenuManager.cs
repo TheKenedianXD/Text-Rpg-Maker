@@ -95,8 +95,6 @@ namespace TextRpg.Game.Managers
             }
             while (_menuItems[newRow, newCol] == null || _menuItems[newRow, newCol].Action == null);
 
-            Logger.LogInfo($"{nameof(MenuManager)}::{nameof(Move)}", $"Cursor moved to: {newRow}, {newCol}");
-
             _selectedRow = newRow;
             _selectedCol = newCol;
         }
