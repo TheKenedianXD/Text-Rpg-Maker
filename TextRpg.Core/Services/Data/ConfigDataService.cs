@@ -6,12 +6,12 @@ namespace TextRpg.Core.Services.Data
 {
     public static class ConfigDataService
     {
-        private const string basePath = "Data/Configs/";
+        private const string BasePath = "Data/Configs/";
 
         private static readonly Dictionary<ConfigData, (Type Type, string FilePath)> DataFiles = new()
         {
-            { ConfigData.Names, (typeof(NamesModel), $"{basePath}Names.json") },
-            { ConfigData.AppConfig, (typeof(AppConfigModel), $"{basePath}AppConfig.json") },
+            { ConfigData.Names, (typeof(NamesModel), $"{BasePath}Names.json") },
+            { ConfigData.AppConfig, (typeof(AppConfigModel), $"{BasePath}AppConfig.json") },
         };
 
         private static readonly Dictionary<ConfigData, object> LoadedData = [];
