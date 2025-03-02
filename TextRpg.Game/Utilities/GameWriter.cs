@@ -12,11 +12,26 @@ namespace TextRpg.Game.Utilities
             }
 
             int screenWidth = Console.WindowWidth;
-            int padding = (screenWidth - text.Length) / 2;
-            padding = Math.Max(padding, 0);
 
-            Console.WriteLine(new string(' ', padding) + text);
+            string[] lines = text.Split('\n');
+
+            foreach (string line in lines)
+            {
+                string trimmedLine = line.TrimEnd();
+
+                if (string.IsNullOrWhiteSpace(trimmedLine))
+                {
+                    Console.WriteLine();
+                    continue;
+                }
+
+                int padding = (screenWidth - trimmedLine.Length) / 2;
+                padding = Math.Max(padding, 0);
+
+                Console.WriteLine(new string(' ', padding) + trimmedLine);
+            }
         }
+
 
         public static void ColoredCenterText(List<(string text, ConsoleColor? color)> coloredSegments)
         {
