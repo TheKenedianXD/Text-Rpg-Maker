@@ -2,6 +2,8 @@
 using TextRpg.Core.Services.Data;
 using TextRpg.Game.Controllers.Menu;
 using TextRpg.Core.Utilities;
+using TextRpg.Core.Models.Config;
+using TextRpg.Core.Models.Enums;
 
 namespace TextRpg.Game
 {
@@ -12,6 +14,9 @@ namespace TextRpg.Game
 
         public static void Start()
         {
+            AppConfigModel config = ConfigDataService.GetSingle<AppConfigModel>(ConfigData.AppConfig);
+            Logger.Initialize(config);
+
             Logger.LogInfo($"{nameof(GameController)}::{nameof(Start)}", "Game started. Loading configuration and game data.");
             ConfigDataService.LoadConfig();
             GameDataService.LoadGameData();
@@ -69,6 +74,11 @@ namespace TextRpg.Game
             _currentState = newState;
         }
 
+        public static MenuState GetGameState()
+        {
+            return _currentState;
+        }
+
         public static void SetSelectedCharacter(string name)
         {
             Logger.LogInfo($"{nameof(GameController)}::{nameof(SetSelectedCharacter)}", $"Selected character set to '{name}'");
@@ -77,7 +87,6 @@ namespace TextRpg.Game
 
         public static string GetSelectedCharacter()
         {
-            Logger.LogInfo($"{nameof(GameController)}::{nameof(GetSelectedCharacter)}", $"Retrieved selected character: '{_selectedCharacter}'");
             return _selectedCharacter;
         }
     }

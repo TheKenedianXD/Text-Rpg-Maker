@@ -25,14 +25,9 @@ namespace TextRpg.Core.Services.Data
                 var (modelType, fileName) = entry.Value;
                 string filePath = $"{BasePath}{characterName}/{fileName}";
 
-                Logger.LogInfo($"{nameof(CharacterDataService)}::{nameof(LoadCharacterData)}", $"Attempting to load data from {filePath}");
-
                 object? data = JsonService.Load(modelType, filePath);
 
-                if (data != null)
-                {
-                    Logger.LogInfo($"{nameof(CharacterDataService)}::{nameof(LoadCharacterData)}", $"Successfully loaded data for {characterName} from {filePath}");
-                } else
+                if (data == null)
                 {
                     Logger.LogWarning($"{nameof(CharacterDataService)}::{nameof(LoadCharacterData)}", $"Failed to load data for {characterName} from {filePath}, using default values.");
                 }
@@ -46,10 +41,7 @@ namespace TextRpg.Core.Services.Data
             Logger.LogInfo($"{nameof(CharacterDataService)}::{nameof(GetData)}", $"Retrieving data for {key}");
 
             if (LoadedData.TryGetValue(key, out object? value) && value is List<T> typedList)
-            {
-                Logger.LogInfo($"{nameof(CharacterDataService)}::{nameof(GetData)}", $"Successfully retrieved data for {key}");
                 return typedList;
-            }
 
             if (DataFiles.ContainsKey(key))
             {
@@ -63,10 +55,7 @@ namespace TextRpg.Core.Services.Data
             Logger.LogInfo($"{nameof(CharacterDataService)}::{nameof(GetSingle)}", $"Retrieving single data object for {key}");
 
             if (LoadedData.TryGetValue(key, out object? value) && value is T typedObject)
-            {
-                Logger.LogInfo($"{nameof(CharacterDataService)}::{nameof(GetSingle)}", $"Successfully retrieved single data object for {key}");
                 return typedObject;
-            }
 
             if (DataFiles.ContainsKey(key))
             {

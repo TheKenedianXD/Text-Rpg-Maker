@@ -17,6 +17,9 @@ namespace TextRpg.Game.Controllers.Menu
                 GameController.SetGameState(MenuState.Exit);
             });
 
+            if (GameController.GetGameState() == MenuState.Exit)
+                return;
+
             Logger.LogInfo($"{nameof(MenuController)}::{nameof(ShowWelcomeScreen)}", "Switching to Character Selection.");
             GameController.SetGameState(MenuState.CharacterSelection);
         }

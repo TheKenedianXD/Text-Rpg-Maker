@@ -10,6 +10,11 @@ namespace TextRpg.Core.Models.Data.Character
         [Description("A brief description of the class, explaining its role and abilities.")]
         public string Description { get; set; } = "";
 
+        public ClassModel()
+        {
+
+        }
+
         public ClassModel(string name, string description)
         {
             Name = name;

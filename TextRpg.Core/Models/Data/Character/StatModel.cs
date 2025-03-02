@@ -15,6 +15,11 @@ namespace TextRpg.Core.Models.Data.Character
         [Description("A dictionary that maps affected base stats to their effect value and type.")]
         public Dictionary<BaseStat, (float Value, bool IsMultiplier)> Affects { get; set; } = [];
 
+        public StatModel()
+        {
+
+        }
+
         public StatModel(string name, Dictionary<BaseStat, (float, bool)> affects)
         {
             Name = name;

@@ -24,14 +24,9 @@ namespace TextRpg.Core.Services.Data
             {
                 var (modelType, filePath) = entry.Value;
 
-                Logger.LogInfo($"{nameof(ConfigDataService)}::{nameof(LoadConfig)}", $"Attempting to load config from {filePath}");
-
                 object? data = JsonService.Load(modelType, filePath);
 
-                if (data != null)
-                {
-                    Logger.LogInfo($"{nameof(ConfigDataService)}::{nameof(LoadConfig)}", $"Successfully loaded {entry.Key} from {filePath}");
-                } else
+                if (data == null)
                 {
                     Logger.LogWarning($"{nameof(ConfigDataService)}::{nameof(LoadConfig)}", $"Failed to load {entry.Key} from {filePath}, using default values.");
                 }
@@ -45,10 +40,7 @@ namespace TextRpg.Core.Services.Data
             Logger.LogInfo($"{nameof(ConfigDataService)}::{nameof(GetSingle)}", $"Retrieving single config data for {key}");
 
             if (LoadedData.TryGetValue(key, out object? value) && value is T typedObject)
-            {
-                Logger.LogInfo($"{nameof(ConfigDataService)}::{nameof(GetSingle)}", $"Successfully retrieved {key}");
                 return typedObject;
-            }
 
             if (DataFiles.ContainsKey(key))
             {
