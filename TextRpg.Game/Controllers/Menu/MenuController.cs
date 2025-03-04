@@ -1,8 +1,9 @@
 ﻿using TextRpg.Game.Menus;
 using TextRpg.Game.Menus.Character;
 using TextRpg.Game.Utilities;
-using TextRpg.Game.Models.Enums;
 using TextRpg.Core.Utilities;
+using TextRpg.Core.Services.Data;
+using TextRpg.Game.Enums;
 
 namespace TextRpg.Game.Controllers.Menu
 {
@@ -16,6 +17,10 @@ namespace TextRpg.Game.Controllers.Menu
                 Logger.LogInfo($"{nameof(MenuController)}::{nameof(ShowWelcomeScreen)}", "Exiting game from Welcome Screen.");
                 GameController.SetGameState(MenuState.Exit);
             });
+
+            if (GameController.GetGameState() == MenuState.Exit ||
+                GameController.GetGameState() == MenuState.MainMenu)
+                return;
 
             Logger.LogInfo($"{nameof(MenuController)}::{nameof(ShowWelcomeScreen)}", "Switching to Character Selection.");
             GameController.SetGameState(MenuState.CharacterSelection);
@@ -32,7 +37,8 @@ namespace TextRpg.Game.Controllers.Menu
                 GameController.SetSelectedCharacter(selectedCharacter);
                 Logger.LogInfo($"{nameof(MenuController)}::{nameof(ShowCharacterSelection)}", "Switching to Main Menu.");
                 GameController.SetGameState(MenuState.MainMenu);
-            } else
+            }
+            else
             {
                 Logger.LogInfo($"{nameof(MenuController)}::{nameof(ShowCharacterSelection)}", "Character selection canceled or no character chosen.");
             }

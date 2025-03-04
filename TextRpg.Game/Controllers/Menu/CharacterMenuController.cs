@@ -26,14 +26,15 @@ namespace TextRpg.Game.Controllers.Menu
                     return "";
                 }
 
-                List<CharacterModel> characters = CharacterDataService.GetData<CharacterModel>(CharacterData.Character);
-                if (characters.Any(c => c.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase)))
+                Dictionary<string, CharacterModel> characters = CharacterDataService.GetLoadedCharacters();
+                if (characters.ContainsKey(characterName))
                 {
                     GameWriter.CenterText("A character with this name already exists.");
                     GameWriter.CenterText("\nPress any key to try again...");
                     Console.ReadKey(true);
                     Logger.LogWarning($"{nameof(CharacterMenuController)}::{nameof(CreateCharacter)}", $"Character creation failed: Name '{characterName}' already exists.");
-                } else
+                }
+                else
                 {
                     Logger.LogInfo($"{nameof(CharacterMenuController)}::{nameof(CreateCharacter)}", $"Character name '{characterName}' selected.");
                     break;
@@ -69,6 +70,7 @@ namespace TextRpg.Game.Controllers.Menu
 
             Logger.LogInfo($"{nameof(CharacterMenuController)}::{nameof(CreateCharacter)}", $"Character '{characterName}' successfully created with Race '{race}' and Class '{characterClass}'.");
             CharacterDataService.CreateCharacter(characterName, race, characterClass);
+
             return characterName;
         }
 
@@ -82,7 +84,8 @@ namespace TextRpg.Game.Controllers.Menu
                 Logger.LogInfo($"{nameof(CharacterMenuController)}::{nameof(DeleteCharacter)}", $"Character '{characterToDelete}' selected for deletion.");
                 CharacterDataService.DeleteCharacter(characterToDelete);
                 Logger.LogInfo($"{nameof(CharacterMenuController)}::{nameof(DeleteCharacter)}", $"Character '{characterToDelete}' successfully deleted.");
-            } else
+            }
+            else
             {
                 Logger.LogInfo($"{nameof(CharacterMenuController)}::{nameof(DeleteCharacter)}", "Character deletion cancelled.");
             }

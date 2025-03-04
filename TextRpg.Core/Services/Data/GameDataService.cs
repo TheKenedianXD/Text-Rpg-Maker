@@ -6,13 +6,13 @@ namespace TextRpg.Core.Services.Data
 {
     public static class GameDataService
     {
-        private const string BasePath = "Game/Data/";
+        private const string BasePath = "Data\\";
 
         private static readonly Dictionary<GameData, (Type Type, string FilePath)> DataFiles = new()
         {
-            { GameData.Races, (typeof(RaceModel), $"{BasePath}Races.json") },
-            { GameData.Classes, (typeof(ClassModel), $"{BasePath}Classes.json") },
-            { GameData.Stats, (typeof(StatModel), $"{BasePath}Stats.json") },
+            { GameData.Races, (typeof(List<RaceModel>), $"{BasePath}Races.json") },
+            { GameData.Classes, (typeof(List<ClassModel>), $"{BasePath}Classes.json") },
+            { GameData.Stats, (typeof(List<StatModel>), $"{BasePath}Stats.json") },
             { GameData.Leveling, (typeof(LevelingModel), $"{BasePath}Leveling.json") },
         };
 
@@ -27,10 +27,7 @@ namespace TextRpg.Core.Services.Data
 
                 object? data = JsonService.Load(modelType, filePath);
 
-                if (data != null)
-                {
-                    Logger.LogInfo($"{nameof(GameDataService)}::{nameof(LoadGameData)}", $"Successfully loaded data from {filePath}");
-                } else
+                if (data == null)
                 {
                     Logger.LogWarning($"{nameof(GameDataService)}::{nameof(LoadGameData)}", $"Failed to load data from {filePath}, using default values.");
                 }
@@ -44,10 +41,7 @@ namespace TextRpg.Core.Services.Data
             Logger.LogInfo($"{nameof(GameDataService)}::{nameof(GetData)}", $"Retrieving data for {key}");
 
             if (LoadedData.TryGetValue(key, out object? value) && value is List<T> typedList)
-            {
-                Logger.LogInfo($"{nameof(GameDataService)}::{nameof(GetData)}", $"Successfully retrieved data for {key}");
                 return typedList;
-            }
 
             Logger.LogWarning($"{nameof(GameDataService)}::{nameof(GetData)}", $"Data for {key} not found or is of incorrect type.");
             return [];
@@ -58,10 +52,7 @@ namespace TextRpg.Core.Services.Data
             Logger.LogInfo($"{nameof(GameDataService)}::{nameof(GetSingle)}", $"Retrieving single data object for {key}");
 
             if (LoadedData.TryGetValue(key, out object? value) && value is T typedObject)
-            {
-                Logger.LogInfo($"{nameof(GameDataService)}::{nameof(GetSingle)}", $"Successfully retrieved single data object for {key}");
                 return typedObject;
-            }
 
             Logger.LogWarning($"{nameof(GameDataService)}::{nameof(GetSingle)}", $"Data for {key} not found or is of incorrect type.");
             return Activator.CreateInstance<T>();

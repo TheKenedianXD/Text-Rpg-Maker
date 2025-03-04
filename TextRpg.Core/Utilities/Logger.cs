@@ -1,4 +1,5 @@
-﻿using TextRpg.Core.Models.Config;
+﻿using System.Reflection;
+using TextRpg.Core.Models.Config;
 using TextRpg.Core.Models.Enums;
 using TextRpg.Core.Services.Data;
 
@@ -6,6 +7,17 @@ namespace TextRpg.Core.Utilities
 {
     public static class Logger
     {
+        private static AppConfigModel _config = new();
+
+        public static bool IsInitialized { get; private set; } = false;
+
+        public static void Initialize(AppConfigModel config)
+        {
+            _config = config;
+            IsInitialized = true;
+            LogInfo($"{nameof(Logger)}::{nameof(Initialize)}", "Logger initialized with AppConfig.");
+        }
+
         private static readonly Dictionary<string, int> LogLevels = new()
         {
             { "Info", 1 },
@@ -15,16 +27,18 @@ namespace TextRpg.Core.Utilities
 
         private static string GetLogFilePath()
         {
-            string logDirectory = "Logs";
-            Directory.CreateDirectory(logDirectory);
+            string baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+            Directory.CreateDirectory(baseDirectory);
+
             string logFileName = $"log-{DateTime.Now:ddMMyyyy}.log";
-            return Path.Combine(logDirectory, logFileName);
+            return Path.Combine(baseDirectory, logFileName);
         }
 
         private static void WriteLog(string level, string origin, string message, Exception? exception = null)
         {
-            var config = ConfigDataService.GetSingle<AppConfigModel>(ConfigData.AppConfig);
-            if (LogLevels[level] < LogLevels[config.LogLevel])
+            if (!IsInitialized) return;
+
+            if (LogLevels[level] < LogLevels[_config.LogLevel])
                 return;
 
             string timestamp = DateTime.Now.ToString("dd.MM.yyyy-HH:mm:ss");
@@ -32,10 +46,20 @@ namespace TextRpg.Core.Utilities
 
             if (exception != null)
             {
-                logMessage += $" | {exception.StackTrace}";
+                logMessage += $" | Exception: {exception.Message} | {exception.StackTrace}";
+                if (exception.InnerException != null)
+                {
+                    logMessage += $" | InnerException: {exception.InnerException.Message} | {exception.InnerException.StackTrace}";
+                }
             }
 
-            File.AppendAllText(GetLogFilePath(), logMessage + Environment.NewLine);
+            try
+            {
+                File.AppendAllText(GetLogFilePath(), logMessage + Environment.NewLine);
+            } catch (Exception logEx)
+            {
+                Console.WriteLine($"[Logger] Failed to write log: {logEx.Message}");
+            }
         }
 
         public static void LogInfo(string origin, string message) => WriteLog("Info", origin, message);

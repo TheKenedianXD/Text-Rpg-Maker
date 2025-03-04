@@ -11,5 +11,10 @@ namespace TextRpg.Core.Models.Data.Character
 
         [Description("The stat increases applied per level.")]
         public Dictionary<int, Dictionary<BaseStat, float>> StatIncreases { get; set; } = [];
+
+        public LevelingModel()
+        {
+
+        }
     }
 }
