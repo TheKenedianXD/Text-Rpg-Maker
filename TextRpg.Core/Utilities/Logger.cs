@@ -9,7 +9,7 @@ namespace TextRpg.Core.Utilities
     {
         private static AppConfigModel _config = new();
 
-        public static bool IsInitialized { get; set; } = false;
+        public static bool IsInitialized { get; private set; } = false;
 
         public static void Initialize(AppConfigModel config)
         {
@@ -27,20 +27,11 @@ namespace TextRpg.Core.Utilities
 
         private static string GetLogFilePath()
         {
-            string source = Assembly.GetCallingAssembly().FullName ?? "";
             string baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Logs");
-
-            string logDirectory = source.Contains("Core") ? Path.Combine(baseDirectory, "Core") :
-                                      source.Contains("AdminPanel") ? Path.Combine(baseDirectory, "AdminPanel") :
-                                      Path.Combine(baseDirectory, "Game");
-
-            if (!Directory.Exists(logDirectory))
-            {
-                Directory.CreateDirectory(logDirectory);
-            }
+            Directory.CreateDirectory(baseDirectory);
 
             string logFileName = $"log-{DateTime.Now:ddMMyyyy}.log";
-            return Path.Combine(logDirectory, logFileName);
+            return Path.Combine(baseDirectory, logFileName);
         }
 
         private static void WriteLog(string level, string origin, string message, Exception? exception = null)
@@ -55,10 +46,20 @@ namespace TextRpg.Core.Utilities
 
             if (exception != null)
             {
-                logMessage += $" | {exception.StackTrace}";
+                logMessage += $" | Exception: {exception.Message} | {exception.StackTrace}";
+                if (exception.InnerException != null)
+                {
+                    logMessage += $" | InnerException: {exception.InnerException.Message} | {exception.InnerException.StackTrace}";
+                }
             }
 
-            File.AppendAllText(GetLogFilePath(), logMessage + Environment.NewLine);
+            try
+            {
+                File.AppendAllText(GetLogFilePath(), logMessage + Environment.NewLine);
+            } catch (Exception logEx)
+            {
+                Console.WriteLine($"[Logger] Failed to write log: {logEx.Message}");
+            }
         }
 
         public static void LogInfo(string origin, string message) => WriteLog("Info", origin, message);

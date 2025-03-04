@@ -361,3 +361,13 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Ignore version tracking & release scripts
+build_release.bat
+build_release.sh
+
+# Ignore all release builds
+Releases/
+
+# Ignore your custom release scripts folder
+release_scripts/

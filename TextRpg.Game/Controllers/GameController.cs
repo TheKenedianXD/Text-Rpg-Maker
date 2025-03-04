@@ -1,9 +1,9 @@
-﻿using TextRpg.Game.Models.Enums;
-using TextRpg.Core.Services.Data;
+﻿using TextRpg.Core.Services.Data;
 using TextRpg.Game.Controllers.Menu;
 using TextRpg.Core.Utilities;
 using TextRpg.Core.Models.Config;
 using TextRpg.Core.Models.Enums;
+using TextRpg.Game.Enums;
 
 namespace TextRpg.Game
 {
@@ -20,6 +20,7 @@ namespace TextRpg.Game
             Logger.LogInfo($"{nameof(GameController)}::{nameof(Start)}", "Game started. Loading configuration and game data.");
             ConfigDataService.LoadConfig();
             GameDataService.LoadGameData();
+            CharacterDataService.LoadAllCharacters();
             Logger.LogInfo($"{nameof(GameController)}::{nameof(Start)}", "Configuration and game data loaded. Starting game loop.");
             RunGameLoop();
         }

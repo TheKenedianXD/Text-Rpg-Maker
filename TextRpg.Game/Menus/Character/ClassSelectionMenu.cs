@@ -5,11 +5,14 @@ using TextRpg.Game.Managers;
 using TextRpg.Game.Utilities;
 using TextRpg.Core.Utilities;
 using TextRpg.Game.Models;
+using TextRpg.Game.Menus.Components;
 
 namespace TextRpg.Game.Menus.Character
 {
     public static class ClassSelectionMenu
     {
+        private static string SelectedClass = "";
+
         public static string Show()
         {
             Logger.LogInfo($"{nameof(ClassSelectionMenu)}::{nameof(Show)}", "Displaying Class Selection menu.");
@@ -29,44 +32,60 @@ namespace TextRpg.Game.Menus.Character
             if (classes.Count == 0)
             {
                 Logger.LogWarning($"{nameof(ClassSelectionMenu)}::{nameof(Show)}", "No classes available for selection.");
+                DataMissingInfo.ConsiderAddingData("Classes");
                 return "";
             }
 
             List<MenuItem> menuItems = [];
             foreach (var classModel in classes)
             {
-                menuItems.Add(new MenuItem(classModel.Name, () => ShowClassDetails(classModel)));
+                menuItems.Add(new MenuItem(classModel.Name, () =>
+                {
+                    if (ShowClassDetails(classModel))
+                    {
+                        SelectedClass = classModel.Name;
+                    }
+                    else
+                    {
+                        SelectedClass = "";
+                    }
+                }, false));
             }
 
-            MenuItem[,] menuArray = new MenuItem[menuItems.Count, 1];
-            for (int i = 0; i < menuItems.Count; i++)
-            {
-                menuArray[i, 0] = menuItems[i];
-            }
+            MenuManager menu = new(menuItems);
+            menu.ShowMenu("== Select Class ==");
 
-            MenuManager menu = new(menuArray);
-            (int selectedRow, int selectedCol) = menu.ShowMenu("== Select Class ==");
-
-            if (selectedRow >= 0 && selectedCol == 0)
+            if (!string.IsNullOrEmpty(SelectedClass))
             {
-                Logger.LogInfo($"{nameof(ClassSelectionMenu)}::{nameof(Show)}", $"Class '{classes[selectedRow].Name}' selected.");
-                return classes[selectedRow].Name;
+                Logger.LogInfo($"{nameof(ClassSelectionMenu)}::{nameof(Show)}", $"Class '{SelectedClass}' selected.");
+                return SelectedClass;
             }
 
             Logger.LogInfo($"{nameof(ClassSelectionMenu)}::{nameof(Show)}", "No class selected, returning to previous menu.");
             return "";
         }
 
-        private static void ShowClassDetails(ClassModel classModel)
+        private static bool ShowClassDetails(ClassModel classModel)
         {
             Logger.LogInfo($"{nameof(ClassSelectionMenu)}::{nameof(ShowClassDetails)}", $"Displaying details for class '{classModel.Name}'.");
 
             Console.Clear();
-            GameWriter.CenterText($"Class: {classModel.Name}");
-            Console.WriteLine();
-            GameWriter.CenterText(classModel.Description);
-            GameWriter.CenterText("\nPress any key to go back...");
-            Console.ReadKey(true);
+
+            List<MenuItem> menuItems = [];
+            ConfirmationComponent confirmationMenu = new();
+            confirmationMenu.AddToMenu(menuItems);
+
+            MenuManager menu = new(menuItems);
+            int selectedIndex = menu.ShowMenu($"Class: {classModel.Name}\n" +
+                classModel.Description + 
+                "\n");
+
+            bool confirmed = ConfirmationComponent.HandleSelection(selectedIndex, menuItems);
+
+            Logger.LogInfo($"{nameof(ClassSelectionMenu)}::{nameof(ShowClassDetails)}",
+                $"Class selection confirmation result: {(confirmed ? "Confirmed" : "Cancelled")}");
+
+            return confirmed;
         }
     }
 }

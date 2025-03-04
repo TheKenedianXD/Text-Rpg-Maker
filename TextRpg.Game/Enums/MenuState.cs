@@ -1,4 +1,4 @@
-﻿namespace TextRpg.Game.Models.Enums
+﻿namespace TextRpg.Game.Enums
 {
     public enum MenuState
     {

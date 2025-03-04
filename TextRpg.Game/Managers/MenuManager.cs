@@ -1,26 +1,23 @@
-﻿using TextRpg.Core.Utilities;
-using TextRpg.Game.Models;
+﻿using System;
+using System.Collections.Generic;
+using TextRpg.Core.Utilities;
 using TextRpg.Game.Utilities;
+using TextRpg.Game.Models;
 
 namespace TextRpg.Game.Managers
 {
     public class MenuManager
     {
-        private readonly MenuItem[,] _menuItems;
-        private readonly int _rows, _cols;
-        private int _selectedRow = 0, _selectedCol = 0;
+        private readonly List<MenuItem> _menuItems;
+        private int _selectedIndex = 0;
 
-        public MenuManager(MenuItem[,] menuItems)
+        public MenuManager(List<MenuItem> menuItems)
         {
             Logger.LogInfo($"{nameof(MenuManager)}::{nameof(MenuManager)}", "Initializing menu.");
-            _menuItems = menuItems;
-            _rows = _menuItems.GetLength(0);
-            _cols = _menuItems.GetLength(1);
-
-            Move(0, 0);
+            _menuItems = new List<MenuItem>(menuItems);
         }
 
-        public (int, int) ShowMenu(string header = "", string footer = "")
+        public int ShowMenu(string header = "", string footer = "")
         {
             Logger.LogInfo($"{nameof(MenuManager)}::{nameof(ShowMenu)}", "Displaying menu.");
             bool running = true;
@@ -44,34 +41,20 @@ namespace TextRpg.Game.Managers
                 {
                     case ConsoleKey.UpArrow:
                     case ConsoleKey.W:
-                        Move(-1, 0);
+                        Move(-1);
                         break;
                     case ConsoleKey.DownArrow:
                     case ConsoleKey.S:
-                        Move(1, 0);
-                        break;
-                    case ConsoleKey.LeftArrow:
-                    case ConsoleKey.A:
-                        Move(0, -1);
-                        break;
-                    case ConsoleKey.RightArrow:
-                    case ConsoleKey.D:
-                        Move(0, 1);
+                        Move(1);
                         break;
                     case ConsoleKey.Enter:
-                        var selectedItem = _menuItems[_selectedRow, _selectedCol];
-                        if (selectedItem != null)
+                        var selectedItem = _menuItems[_selectedIndex];
+                        if (selectedItem.Action != null)
                         {
-                            if (selectedItem.Action != null)
-                            {
-                                Logger.LogInfo($"{nameof(MenuManager)}::{nameof(ShowMenu)}", $"Executing action for menu item: {selectedItem.Name}");
-                                selectedItem.Action.Invoke();
-                                return (-1, -1);
-                            }
-                            Logger.LogInfo($"{nameof(MenuManager)}::{nameof(ShowMenu)}", $"Menu item selected: {_selectedRow}, {_selectedCol}");
-                            return (_selectedRow, _selectedCol);
+                            Logger.LogInfo($"{nameof(MenuManager)}::{nameof(ShowMenu)}", $"Executing action for menu item: {selectedItem.Name}");
+                            selectedItem.Action.Invoke();
                         }
-                        break;
+                        return selectedItem.IsReturningIndex ? _selectedIndex : -1;
                 }
 
                 if (!string.IsNullOrEmpty(footer))
@@ -80,61 +63,79 @@ namespace TextRpg.Game.Managers
                     GameWriter.CenterText(footer);
                 }
             }
-            return (-1, -1);
+            return -1;
         }
 
-        private void Move(int rowOffset, int colOffset)
+        private void Move(int direction)
         {
-            int newRow = _selectedRow;
-            int newCol = _selectedCol;
+            int newIndex = _selectedIndex;
 
-            do
+            for (int attempts = 0; attempts < _menuItems.Count; attempts++)
             {
-                newRow = (newRow + rowOffset + _rows) % _rows;
-                newCol = (newCol + colOffset + _cols) % _cols;
-            }
-            while (_menuItems[newRow, newCol] == null || _menuItems[newRow, newCol].Action == null);
+                newIndex += direction;
 
-            _selectedRow = newRow;
-            _selectedCol = newCol;
+                // Wrap around manually
+                if (newIndex >= _menuItems.Count) newIndex = 0;
+                if (newIndex < 0) newIndex = _menuItems.Count - 1;
+
+                // Stop if we find a valid item
+                if (_menuItems[newIndex].Action != null)
+                {
+                    _selectedIndex = newIndex;
+                    return;
+                }
+            }
+
+            Logger.LogWarning($"{nameof(MenuManager)}::{nameof(Move)}", "No valid menu items found.");
+        }
+
+
+        public void AddMenuItems(List<MenuItem> newItems)
+        {
+            Logger.LogInfo($"{nameof(MenuManager)}::{nameof(AddMenuItems)}", $"Adding {newItems.Count} menu items.");
+            _menuItems.AddRange(newItems);
+        }
+
+        public void RemoveMenuItems(List<MenuItem> itemsToRemove)
+        {
+            Logger.LogInfo($"{nameof(MenuManager)}::{nameof(RemoveMenuItems)}", $"Removing {itemsToRemove.Count} menu items.");
+            _menuItems.RemoveAll(itemsToRemove.Contains);
         }
 
         private void RenderMenu()
         {
             Logger.LogInfo($"{nameof(MenuManager)}::{nameof(RenderMenu)}", "Rendering menu.");
 
-            for (int row = 0; row < _rows; row++)
+            for (int i = 0; i < _menuItems.Count; i++)
             {
-                if (_menuItems[row, 0] == null)
+                var menuItem = _menuItems[i];
+
+                if (string.IsNullOrWhiteSpace(menuItem.Name) && menuItem.Action == null)
                 {
                     Console.WriteLine();
                     continue;
                 }
 
-                List<(string text, ConsoleColor? color)> coloredItems = [];
+                bool isSelected = (i == _selectedIndex);
+                string formattedName = isSelected ? $"[ {menuItem.Name} ]" : $"  {menuItem.Name}  ";
 
-                for (int col = 0; col < _cols; col++)
+                if (!string.IsNullOrEmpty(menuItem.Description))
                 {
-                    if (_menuItems[row, col] == null)
-                    {
-                        coloredItems.Add(("        ", null));
-                        continue;
-                    }
+                    string[] descriptionLines = menuItem.Description.Split("\n");
+                    GameWriter.ColoredCenterText([
+                        (formattedName, isSelected ? ConsoleColor.Yellow : null),
+                        (" | " + descriptionLines[0], null)
+                    ]);
 
-                    if (_menuItems[row, col].Action == null)
+                    for (int j = 1; j < descriptionLines.Length; j++)
                     {
-                        coloredItems.Add(("\n", null));
-                        continue;
+                        GameWriter.CenterText(descriptionLines[j]);
                     }
-
-                    bool isSelected = (row == _selectedRow && col == _selectedCol);
-                    string itemText = isSelected ? $"[ {_menuItems[row, col].Name} ]" : $"  {_menuItems[row, col].Name}  ";
-                    coloredItems.Add((itemText, isSelected ? ConsoleColor.Yellow : null));
+                } else
+                {
+                    GameWriter.ColoredCenterText([(formattedName, isSelected ? ConsoleColor.Yellow : null)]);
                 }
-
-                GameWriter.ColoredCenterText(coloredItems);
             }
         }
-
     }
 }

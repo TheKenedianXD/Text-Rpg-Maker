@@ -6,13 +6,13 @@ namespace TextRpg.Core.Services.Data
 {
     public static class GameDataService
     {
-        private const string BasePath = "Game/Data/";
+        private const string BasePath = "Data\\";
 
         private static readonly Dictionary<GameData, (Type Type, string FilePath)> DataFiles = new()
         {
-            { GameData.Races, (typeof(RaceModel), $"{BasePath}Races.json") },
-            { GameData.Classes, (typeof(ClassModel), $"{BasePath}Classes.json") },
-            { GameData.Stats, (typeof(StatModel), $"{BasePath}Stats.json") },
+            { GameData.Races, (typeof(List<RaceModel>), $"{BasePath}Races.json") },
+            { GameData.Classes, (typeof(List<ClassModel>), $"{BasePath}Classes.json") },
+            { GameData.Stats, (typeof(List<StatModel>), $"{BasePath}Stats.json") },
             { GameData.Leveling, (typeof(LevelingModel), $"{BasePath}Leveling.json") },
         };
 
