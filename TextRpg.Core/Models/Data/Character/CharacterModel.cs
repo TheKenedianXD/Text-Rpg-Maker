@@ -24,10 +24,6 @@ namespace TextRpg.Core.Models.Data.Character
         [Description("The character's class, which determines abilities and playstyle.")]
         public string CharacterClass { get; set; } = "";
 
-        [Description("The last time this character was played.")]
-        [DefaultValue("NOW")] // ✅ Special case: Set dynamically
-        public DateTime LastPlayed { get; set; }
-
         [Description("The character's primary stats, used for calculations.")]
         public Dictionary<string, int> PrimaryStats { get; set; } = [];
 
@@ -36,7 +32,7 @@ namespace TextRpg.Core.Models.Data.Character
 
         }
 
-        public CharacterModel(string name, float experience, int level, string race, string characterClass, DateTime lastPlayed,
+        public CharacterModel(string name, float experience, int level, string race, string characterClass,
             float currentHealth, float currentSpecialResource, Dictionary<string, int> primaryStats)
             : base(currentHealth, currentSpecialResource)
         {
@@ -45,7 +41,6 @@ namespace TextRpg.Core.Models.Data.Character
             Level = level;
             Race = race;
             CharacterClass = characterClass;
-            LastPlayed = lastPlayed;
             PrimaryStats = primaryStats;
         }
     }

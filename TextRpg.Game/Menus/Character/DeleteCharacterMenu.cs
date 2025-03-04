@@ -1,8 +1,8 @@
 ﻿using TextRpg.Core.Services.Data;
 using TextRpg.Core.Models.Data.Character;
-using TextRpg.Core.Models.Enums;
 using TextRpg.Game.Managers;
 using TextRpg.Core.Utilities;
+using TextRpg.Game.Menus.Components;
 using TextRpg.Game.Models;
 
 namespace TextRpg.Game.Menus.Character
@@ -12,6 +12,7 @@ namespace TextRpg.Game.Menus.Character
         public static string Show()
         {
             Logger.LogInfo($"{nameof(DeleteCharacterMenu)}::{nameof(Show)}", "Displaying Character Deletion menu.");
+            bool cancelled = false;
             Console.Clear();
 
             List<string> characterNames = LoadCharacterNames();
@@ -19,25 +20,29 @@ namespace TextRpg.Game.Menus.Character
 
             foreach (var characterName in characterNames)
             {
-                menuItems.Add(new MenuItem(characterName, null));
+                menuItems.Add(new MenuItem(characterName, () => { }, true));
             }
 
-            MenuItem[,] menuArray = new MenuItem[menuItems.Count, 1];
-            for (int i = 0; i < menuItems.Count; i++)
+            if(characterNames.Count > 0) 
             {
-                menuArray[i, 0] = menuItems[i];
+                menuItems.Add(new MenuItem("", null, false));
+                menuItems.Add(new MenuItem("Cancel", () =>
+                {
+                    cancelled = true;
+                }, false));
             }
 
-            MenuManager menu = new(menuArray);
-            (int selectedRow, int selectedCol) = menu.ShowMenu("== Select a Character to Delete ==");
+            MenuManager menu = new(menuItems);
+            int selectedIndex = menu.ShowMenu("== Select a Character to Delete ==");
 
-            if (selectedRow >= 0 && selectedCol == 0)
+            if (cancelled) return "";
+
+            if (selectedIndex > -1 && selectedIndex < characterNames.Count)
             {
-                string characterName = characterNames[selectedRow];
+                string characterName = characterNames[selectedIndex];
                 Logger.LogInfo($"{nameof(DeleteCharacterMenu)}::{nameof(Show)}", $"Character '{characterName}' selected for deletion.");
 
-                Console.Clear();
-                bool confirmed = ConfirmationMenu.Show($"Are you sure you want to delete {characterName}?");
+                bool confirmed = ShowDeletionConfirmation(characterName);
 
                 if (confirmed)
                 {
@@ -58,11 +63,11 @@ namespace TextRpg.Game.Menus.Character
             try
             {
                 Logger.LogInfo($"{nameof(DeleteCharacterMenu)}::{nameof(LoadCharacterNames)}", "Loading character names.");
-                List<CharacterModel> characters = CharacterDataService.GetData<CharacterModel>(CharacterData.Character);
+                Dictionary<string, CharacterModel> characters = CharacterDataService.GetLoadedCharacters();
 
-                foreach (var character in characters)
+                foreach (var character in characters.Keys)
                 {
-                    characterNames.Add(character.Name);
+                    characterNames.Add(character);
                 }
 
                 Logger.LogInfo($"{nameof(DeleteCharacterMenu)}::{nameof(LoadCharacterNames)}", $"Loaded {characterNames.Count} character(s).");
@@ -72,6 +77,22 @@ namespace TextRpg.Game.Menus.Character
             }
 
             return characterNames;
+        }
+
+        private static bool ShowDeletionConfirmation(string characterName)
+        {
+            Logger.LogInfo($"{nameof(DeleteCharacterMenu)}::{nameof(ShowDeletionConfirmation)}", "Asking to confirm character deletion.");
+
+            List<MenuItem> menuItems = [];
+            ConfirmationComponent confirmationMenu = new();
+            confirmationMenu.AddToMenu(menuItems);
+
+            MenuManager menu = new(menuItems);
+            var selectedIndex = menu.ShowMenu($"Are you sure you want to delete {characterName}?");
+
+            bool confirmed = ConfirmationComponent.HandleSelection(selectedIndex, menuItems);
+
+            return confirmed;
         }
     }
 }

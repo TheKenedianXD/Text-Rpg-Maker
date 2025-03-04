@@ -12,11 +12,11 @@ namespace TextRpg.Core.Models.Data.Character
         public string Description { get; set; } = "";
 
         [Description("The default base stats assigned to this race.")]
-        public BaseStatsModel DefaultBaseStats { get; set; }
+        public BaseStatsModel DefaultBaseStats { get; set; } = new BaseStatsModel();
 
         public RaceModel()
         {
-            DefaultBaseStats = new BaseStatsModel();
+
         }
 
         public RaceModel(string name, string description, BaseStatsModel defaultBaseStats)

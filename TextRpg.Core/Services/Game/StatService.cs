@@ -41,7 +41,8 @@ namespace TextRpg.Core.Services.Game
             {
                 Logger.LogInfo($"{nameof(StatService)}::{nameof(CalculateCharacterStats)}", $"Calculating character stats for {character.Name}");
                 baseStats = CalculateCharacterStats(character);
-            } else
+            }
+            else
             {
                 Logger.LogInfo($"{nameof(StatService)}::{nameof(CalculateFinalStats)}", $"Using predefined stats for {entity.GetType().Name}");
                 baseStats = new Dictionary<BaseStat, float>(entity.Stats);
@@ -56,8 +57,10 @@ namespace TextRpg.Core.Services.Game
         {
             var raceModel = GameDataService.GetSingle<RaceModel>(GameData.Races);
             var baseStats = new Dictionary<BaseStat, float>(raceModel.DefaultBaseStats.Stats);
+
             var levelMultipliers = LevelingService.GetStatBonuses(character.Level);
             var primaryStats = character.PrimaryStats;
+
             var statDefinitions = GameDataService.GetData<StatModel>(GameData.Stats);
 
             foreach (var stat in baseStats.Keys.ToList())
@@ -70,6 +73,8 @@ namespace TextRpg.Core.Services.Game
 
             foreach (var primaryStat in primaryStats)
             {
+                if (primaryStat.Value <= 1) continue;
+
                 var statDefinition = statDefinitions.FirstOrDefault(s => s.Name == primaryStat.Key);
                 if (statDefinition != null)
                 {

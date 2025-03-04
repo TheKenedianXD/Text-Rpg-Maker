@@ -1,4 +1,7 @@
 ﻿using TextRpg.Core.Utilities;
+using TextRpg.Game.Managers;
+using TextRpg.Game.Menus.Components;
+using TextRpg.Game.Models;
 using TextRpg.Game.Utilities;
 
 namespace TextRpg.Game.Menus.Character
@@ -26,15 +29,27 @@ namespace TextRpg.Game.Menus.Character
 
         public static bool ConfirmCharacter(string name, string race, string characterClass)
         {
-            Logger.LogInfo($"{nameof(CreateCharacterMenu)}::{nameof(ConfirmCharacter)}", $"Confirming character: Name='{name}', Race='{race}', Class='{characterClass}'");
+            Logger.LogInfo($"{nameof(CreateCharacterMenu)}::{nameof(ConfirmCharacter)}",
+                $"Confirming character: Name='{name}', Race='{race}', Class='{characterClass}'");
 
             string header = $"Are you satisfied with your character?\n\n" +
                             $"Name: {name}\n" +
                             $"Race: {race}\n" +
-                            $"Class: {characterClass}\n";
+                            $"Class: {characterClass}";
 
-            bool confirmed = ConfirmationMenu.Show(header);
-            Logger.LogInfo($"{nameof(CreateCharacterMenu)}::{nameof(ConfirmCharacter)}", $"Character confirmation result: {(confirmed ? "Confirmed" : "Cancelled")}");
+            List<MenuItem> menuItems = [];
+
+            ConfirmationComponent confirmationMenu = new();
+            confirmationMenu.AddToMenu(menuItems);
+
+            MenuManager menu = new(menuItems);
+            int selectedIndex = menu.ShowMenu(header);
+
+            bool confirmed = ConfirmationComponent.HandleSelection(selectedIndex, menuItems);
+
+            Logger.LogInfo($"{nameof(CreateCharacterMenu)}::{nameof(ConfirmCharacter)}",
+                $"Character confirmation result: {(confirmed ? "Confirmed" : "Cancelled")}");
+
             return confirmed;
         }
     }

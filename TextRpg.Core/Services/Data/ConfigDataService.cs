@@ -6,7 +6,7 @@ namespace TextRpg.Core.Services.Data
 {
     public static class ConfigDataService
     {
-        private const string BasePath = "Data/Configs/";
+        private const string BasePath = "Data\\Configs\\";
 
         private static readonly Dictionary<ConfigData, (Type Type, string FilePath)> DataFiles = new()
         {
